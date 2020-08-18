@@ -1,0 +1,6 @@
+TODO:
+induction.v
+    Theorem norm_bin_nat_bin: forall b : bin, normalize b = nat_to_bin (bin_to_nat b).
+
+Lists.v 
+    How _many_ elements does the type [baz] have?
