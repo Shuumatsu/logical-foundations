@@ -4,3 +4,7 @@ induction.v
 
 Lists.v 
     How _many_ elements does the type [baz] have?
+
+Poly.v
+    Theorem nth_of_length_n: forall X l n, length l = n -> @nth_error X l n = None.
+    Definition exp (n m : cnat) : cnat
