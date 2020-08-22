@@ -1,4 +1,5 @@
 TODO:
+
 induction.v
     Theorem norm_bin_nat_bin: forall b : bin, normalize b = nat_to_bin (bin_to_nat b).
 
@@ -8,3 +9,5 @@ Lists.v
 Poly.v
     Theorem nth_of_length_n: forall X l n, length l = n -> @nth_error X l n = None.
     Definition exp (n m : cnat) : cnat
+
+Tactics.v

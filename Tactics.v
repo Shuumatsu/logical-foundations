@@ -954,15 +954,22 @@ Fixpoint split {X Y : Type} (l : list (X*Y))
 (** Prove that [split] and [combine] are inverses in the following
     sense: *)
 
-Theorem combine_split : forall X Y (l : list (X * Y)) l1 l2,
-  split l = (l1, l2) ->
-  combine l1 l2 = l.
+Lemma list_cons_eq : forall X (l1 l2 : list X) (x : X),
+  l1 = l2 -> x :: l1 = x :: l2.
 Proof.
-  intros X Y l. induction l as [ | x xs IHl]; intros l1 l2 H.
-  - inversion H. reflexivity.
-  - destruct x.
-  
-  (* FILL IN HERE *) Admitted.
+  intros X l1 l2 x H. rewrite H. reflexivity.
+Qed.
+
+Theorem combine_split : forall X Y (zs : list (X * Y)) xs ys,
+  split zs = (xs, ys) ->
+  combine xs ys = zs.
+Proof.
+  intros X Y zs. induction zs; intros xs ys eq_zs_xs_ys.
+  - simpl in eq_zs_xs_ys. inversion eq_zs_xs_ys. reflexivity.
+  - destruct x. simpl in eq_zs_xs_ys. 
+    destruct (split zs). inversion eq_zs_xs_ys. 
+    simpl. apply list_cons_eq. apply IHzs. reflexivity.
+Qed.
 (** [] *)
 
 (** The [eqn:] part of the [destruct] tactic is optional: So far,
@@ -1037,7 +1044,18 @@ Theorem bool_fn_applied_thrice :
   forall (f : bool -> bool) (b : bool),
   f (f (f b)) = f b.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros. destruct (f (f b)) eqn: Heqff.
+  - destruct (f b) eqn: Heqf.
+    + assumption.
+    + destruct b.
+      * assumption.
+      * rewrite Heqf in Heqff. discriminate.
+  - destruct (f b) eqn: Heqf.
+    + destruct b.
+      * rewrite Heqf in Heqff. discriminate.
+      * assumption.
+    + assumption.
+Qed.
 (** [] *)
 
 (* ################################################################# *)
@@ -1118,7 +1136,12 @@ Proof.
 Theorem eqb_sym : forall (n m : nat),
   (n =? m) = (m =? n).
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros n. induction n as [ | n' Heqn]; simpl; intros m.
+  - destruct m; reflexivity.
+  - destruct m; simpl.
+    + reflexivity.
+    + apply Heqn.  
+Qed.
 (** [] *)
 
 (** **** Exercise: 3 stars, advanced, optional (eqb_sym_informal) 
