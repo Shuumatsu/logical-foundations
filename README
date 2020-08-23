@@ -1,5 +1,7 @@
 TODO:
 
+Basics.v
+
 induction.v
     Theorem norm_bin_nat_bin: forall b : bin, normalize b = nat_to_bin (bin_to_nat b).
 
@@ -11,3 +13,6 @@ Poly.v
     Definition exp (n m : cnat) : cnat
 
 Tactics.v
+
+Logic.v
+    Theorem contrapositive : forall (P Q : Prop), (P -> Q) -> (~Q -> ~P).
