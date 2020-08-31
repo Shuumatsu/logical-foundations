@@ -885,15 +885,31 @@ Qed.
     lemma below.  (Of course, your definition should _not_ just
     restate the left-hand side of [All_In].) *)
 
-Fixpoint All {T : Type} (P : T -> Prop) (l : list T) : Prop
-  (* REPLACE THIS LINE WITH ":= _your_definition_ ." *). Admitted.
+Fixpoint All {T : Type} (P : T -> Prop) (l : list T) : Prop := 
+  match l with 
+  | [] => True
+  | h :: t => P h /\ All P t 
+  end.
 
 Theorem All_In :
   forall T (P : T -> Prop) (l : list T),
     (forall x, In x l -> P x) <->
     All P l.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  split; intros.
+    - intros. induction l.
+      + reflexivity.
+      + simpl in *. split.
+        * apply H. auto.
+        * apply IHl. auto.
+    - induction l.
+      + simpl in *. contradiction.
+      + simpl in *. destruct H. destruct H0.
+        * rewrite <- H0. assumption.
+        * apply IHl.
+          -- assumption.
+          -- assumption.  
+Qed.
 (** [] *)
 
 (** **** Exercise: 2 stars, standard, optional (combine_odd_even) 
@@ -904,8 +920,8 @@ Proof.
     equivalent to [Podd n] when [n] is odd and equivalent to [Peven n]
     otherwise. *)
 
-Definition combine_odd_even (Podd Peven : nat -> Prop) : nat -> Prop
-  (* REPLACE THIS LINE WITH ":= _your_definition_ ." *). Admitted.
+Definition combine_odd_even (Podd Peven : nat -> Prop) : nat -> Prop := 
+  fun (x : nat) => (oddb x = true -> Podd x) /\ (oddb x = false -> Peven x).
 
 (** To test your definition, prove the following facts: *)
 
@@ -915,7 +931,10 @@ Theorem combine_odd_even_intro :
     (oddb n = false -> Peven n) ->
     combine_odd_even Podd Peven n.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros. unfold combine_odd_even. split.
+    - assumption.
+    - assumption.
+Qed.
 
 Theorem combine_odd_even_elim_odd :
   forall (Podd Peven : nat -> Prop) (n : nat),
@@ -923,7 +942,9 @@ Theorem combine_odd_even_elim_odd :
     oddb n = true ->
     Podd n.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros. unfold combine_odd_even in H. destruct H.
+  apply H. assumption.
+Qed.
 
 Theorem combine_odd_even_elim_even :
   forall (Podd Peven : nat -> Prop) (n : nat),
@@ -931,7 +952,9 @@ Theorem combine_odd_even_elim_even :
     oddb n = false ->
     Peven n.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros. unfold combine_odd_even in H. destruct H.
+  apply H1. assumption.
+Qed.
 
 (** [] *)
 
@@ -953,6 +976,7 @@ Proof.
     particular identifier refers to. *)
 
 Check plus_comm : forall n m : nat, n + m = m + n.
+
 
 (** Coq checks the _statement_ of the [plus_comm] theorem (or prints
     it for us, if we leave off the part beginning with the colon) in
@@ -1242,9 +1266,23 @@ Definition tr_rev {X} (l : list X) : list X :=
 
     Prove that the two definitions are indeed equivalent. *)
 
+
+Lemma rev_append_l2 : forall X, forall xs ys : list X,
+  @rev_append X xs ys = @rev X xs ++ ys.
+Proof. intros X xs. induction xs.
+  - reflexivity.
+  - simpl. intros. induction ys.
+    + rewrite app_nil_r. apply IHxs.
+    + rewrite <- (app_assoc X (rev xs ) [x] (x0 :: ys)). simpl. apply IHxs.
+Qed.
+
 Theorem tr_rev_correct : forall X, @tr_rev X = @rev X.
 Proof.
-(* FILL IN HERE *) Admitted.
+  intros. apply functional_extensionality. unfold tr_rev. 
+  intros xs. induction xs as [ | x xs' IHxs].
+    - reflexivity.
+    - simpl. apply rev_append_l2.
+Qed. 
 (** [] *)
 
 (* ================================================================= *)
@@ -1692,19 +1730,64 @@ Proof.
 *)
 
 Definition peirce := forall P Q: Prop,
-  ((P->Q)->P)->P.
+  ((P -> Q) -> P) -> P.
 
-Definition double_negation_elimination := forall P:Prop,
+Definition double_negation_elimination := forall P: Prop,
   ~~P -> P.
 
-Definition de_morgan_not_and_not := forall P Q:Prop,
-  ~(~P /\ ~Q) -> P\/Q.
+Definition de_morgan_not_and_not := forall P Q: Prop,
+  ~(~P /\ ~Q) -> P \/ Q.
 
-Definition implies_to_or := forall P Q:Prop,
-  (P->Q) -> (~P\/Q).
+Definition implies_to_or := forall P Q: Prop,
+  (P -> Q) -> (~P \/ Q).
+
+(* excluded_middle -> peirce: 直接展开即可 *)
+(* peirce -> excluded_middle: 排中律可看作 perice 的 Q 为 ~(P \/ ~P) 时的情况 *)
+Theorem exc_mid_peirce:
+  excluded_middle <-> peirce.
+Proof. intros. unfold excluded_middle, peirce. split.
+  - intros. destruct (H P).
+    + assumption.
+    + apply H0. intros. unfold not in H1. apply H1 in H2. contradiction.
+  - intros. apply (H _ (~(P \/ ~P))). unfold not. intro. right. intro. 
+    apply H0; left; assumption.
+Qed.
+
+
+(* peirce -> double_negation_elimination: double_negation_elimination 可看作 perice 的 Q 为 False 时的情况 *)
+Theorem peirce_double_negation_elimination: 
+  peirce <-> double_negation_elimination.
+Proof.
+  unfold peirce, double_negation_elimination.
+  split.   
+    - intros. apply (H _ False). intros. unfold not in *. apply H0 in H1. contradiction.
+    - intros. apply H0.
+Admitted.
+
+Theorem double_negation_elimination_to_de_morgan_not_and_not: 
+  double_negation_elimination <-> de_morgan_not_and_not.
+Proof.
+  unfold double_negation_elimination, de_morgan_not_and_not.
+  unfold not. intros. 
+Admitted.
+
+
+
+
 
 (* FILL IN HERE
 
     [] *)
 
 (* 2020-08-18 21:11 *)
+
+
+
+
+
+
+
+
+
+
+
