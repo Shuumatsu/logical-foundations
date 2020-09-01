@@ -19,5 +19,5 @@ Logic.v
     Theorem contrapositive : forall (P Q : Prop), (P -> Q) -> (~Q -> ~P).
     
 IndProp.v
-    (all from)
+    (all after)
     Theorem ev_plus_plus : forall n m p, ev (n + m) -> ev (n + p) -> ev (m + p).

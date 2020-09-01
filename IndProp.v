@@ -560,6 +560,22 @@ Proof.
     - simpl in H. apply IHa. apply eq_add_S. assumption.
 Qed.
 
+(* Theorem ev_plus_plus : forall n m p,
+  ev (n+m) -> ev (n+p) -> ev (m+p).
+Proof.
+  intros n m p Hnm Hnp.
+  apply (ev_sum (n+m) (n+p)) in Hnm.
+  - rewrite plus_assoc in Hnm.
+    assert (T: n + m + n = n + n + m). { rewrite plus_comm. rewrite plus_assoc. reflexivity. }
+    rewrite T in Hnm. rewrite <- plus_assoc in Hnm.
+    apply (ev_ev__ev (n+n) (m+p)) in Hnm.
+    + apply Hnm.
+    + rewrite <- double_plus. apply ev_double.
+  - apply Hnp.
+Qed. *)
+
+Check plus_swap.
+
 Theorem ev_plus_plus : forall n m p,
   ev (n + m) -> ev (n + p) -> ev (m + p).
 Proof.
@@ -567,7 +583,17 @@ Proof.
     - apply (ev_sum (n + m) (double p)).
       + assumption.
       + apply ev_double.
-    - 
+    - rewrite double_plus. 
+      rewrite plus_assoc. rewrite (plus_assoc (n + p) m p).
+      assert (Z: forall a b c, b = c -> b + a = c + a). {
+        intros. rewrite H0. reflexivity.
+      }
+      assert (X: forall a b c, a + b + c = a + c + b). {
+        intros. induction a.
+          - simpl. apply plus_comm.
+          - simpl. apply eq_S. assumption. 
+      }
+      apply Z. apply X.
 Qed.
 (** [] *)
 
