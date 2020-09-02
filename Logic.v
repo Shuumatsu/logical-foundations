@@ -1753,6 +1753,17 @@ Proof. intros. unfold excluded_middle, peirce. split.
     apply H0; left; assumption.
 Qed.
 
+Theorem exc_mid_double_negation_elimination: 
+  excluded_middle <-> double_negation_elimination.
+Proof. unfold excluded_middle, double_negation_elimination. split.
+  - intros. destruct (H P).
+    + assumption.
+    + unfold not in *. apply H0 in H1. contradiction.
+  - intros. apply (H (P \/ ~P)). unfold not. 
+    intros. apply H0. right.
+    intros. apply H0. left. assumption. 
+Qed.
+
 
 (* peirce -> double_negation_elimination: double_negation_elimination 可看作 perice 的 Q 为 False 时的情况 *)
 Theorem peirce_double_negation_elimination: 
