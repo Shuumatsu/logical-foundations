@@ -15,9 +15,13 @@ Poly.v
 Tactics.v
 
 Logic.v
-    (all from)
+    (all from
     Theorem contrapositive : forall (P Q : Prop), (P -> Q) -> (~Q -> ~P).
     
 IndProp.v
-    (all after)
-    Theorem ev_plus_plus : forall n m p, ev (n + m) -> ev (n + p) -> ev (m + p).
+    total_relation not sure
+    empty_relation not sure
+    (all from
+    Theorem le_plus_l : forall a b, a <= a + b.
+
+ProofObjects.v

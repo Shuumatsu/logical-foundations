@@ -1745,7 +1745,7 @@ Definition implies_to_or := forall P Q: Prop,
 (* peirce -> excluded_middle: 排中律可看作 perice 的 Q 为 ~(P \/ ~P) 时的情况 *)
 Theorem exc_mid_peirce:
   excluded_middle <-> peirce.
-Proof. intros. unfold excluded_middle, peirce. split.
+Proof. unfold excluded_middle, peirce. split.
   - intros. destruct (H P).
     + assumption.
     + apply H0. intros. unfold not in H1. apply H1 in H2. contradiction.

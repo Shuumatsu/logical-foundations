@@ -560,20 +560,6 @@ Proof.
     - simpl in H. apply IHa. apply eq_add_S. assumption.
 Qed.
 
-(* Theorem ev_plus_plus : forall n m p,
-  ev (n+m) -> ev (n+p) -> ev (m+p).
-Proof.
-  intros n m p Hnm Hnp.
-  apply (ev_sum (n+m) (n+p)) in Hnm.
-  - rewrite plus_assoc in Hnm.
-    assert (T: n + m + n = n + n + m). { rewrite plus_comm. rewrite plus_assoc. reflexivity. }
-    rewrite T in Hnm. rewrite <- plus_assoc in Hnm.
-    apply (ev_ev__ev (n+n) (m+p)) in Hnm.
-    + apply Hnm.
-    + rewrite <- double_plus. apply ev_double.
-  - apply Hnp.
-Qed. *)
-
 Check plus_swap.
 
 Theorem ev_plus_plus : forall n m p,
@@ -684,18 +670,15 @@ Inductive next_ev : nat -> nat -> Prop :=
     Define an inductive binary relation [total_relation] that holds
     between every pair of natural numbers. *)
 
-(* FILL IN HERE
-
-    [] *)
+Inductive total_relation : nat -> nat -> Prop := 
+  | c_total_relation m n : total_relation m n.
 
 (** **** Exercise: 2 stars, standard, optional (empty_relation) 
 
     Define an inductive binary relation [empty_relation] (on numbers)
     that never holds. *)
 
-(* FILL IN HERE
-
-    [] *)
+Inductive empty_relation : nat -> nat -> Prop :=.
 
 (** From the definition of [le], we can sketch the behaviors of
     [destruct], [inversion], and [induction] on a hypothesis [H]
@@ -717,22 +700,36 @@ Inductive next_ev : nat -> nat -> Prop :=
 
 Lemma le_trans : forall m n o, m <= n -> n <= o -> m <= o.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros. induction H0.
+    - assumption.
+    - apply le_S. assumption.
+Qed.
 
 Theorem O_le_n : forall n,
   0 <= n.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros. induction n.
+    - apply le_n.
+    - apply le_S. assumption.
+Qed.
 
 Theorem n_le_m__Sn_le_Sm : forall n m,
   n <= m -> S n <= S m.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros. induction H.
+    - apply le_n.
+    - apply le_S. assumption.
+Qed.
 
 Theorem Sn_le_Sm__n_le_m : forall n m,
   S n <= S m -> n <= m.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros. inversion H.
+    - apply le_n.
+    - apply (le_trans n (S n) m).
+      + apply le_S. apply le_n.
+      + assumption.
+Qed.
 
 Theorem le_plus_l : forall a b,
   a <= a + b.
@@ -2294,3 +2291,4 @@ Proof.
 (** [] *)
 
 (* 2020-08-24 15:39 *)
+
