@@ -25,3 +25,5 @@ IndProp.v
     Theorem le_plus_l : forall a b, a <= a + b.
 
 ProofObjects.v
+
+IndPrinciples.v
